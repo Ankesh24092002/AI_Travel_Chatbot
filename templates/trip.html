@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trip Planner Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #input-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            resize: none;
+            height: 100px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            flex-grow: 1;
+            margin-top: 20px;
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            white-space: pre-wrap; /* Ensure preformatted text wraps correctly */
+        }
+        #spinner {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border: .25em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border .75s linear infinite;
+        }
+        @keyframes spinner-border {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        #wait-message {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="input-section">
+            <h1>Plan Your Trip</h1>
+            <form id="trip-form">
+                <label for="user_message">Enter your trip details:</label>
+                <textarea id="user_message" name="user_message" rows="4" cols="50"></textarea>
+                <button type="submit">Plan Trip</button>
+            </form>
+        </div>
+        <div id="spinner">
+            <div class="spinner-border"></div>
+            <div id="wait-message">Please wait while we plan your trip...</div>
+        </div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('trip-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = document.getElementById('user_message').value;
+            
+            document.getElementById('spinner').style.display = 'flex';
+            document.getElementById('response').innerHTML = '';
+
+            const response = await fetch('/plan_trip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'user_message': userMessage
+                })
+            });
+            
+            const data = await response.json();
+            document.getElementById('response').innerHTML = `<pre>${data.response}</pre>`;
+            document.getElementById('spinner').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
